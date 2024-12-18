@@ -18,6 +18,9 @@ And use the following example Corefile:
     ecs_remap {
         192.168.1.2 1.2.3.0/24
         192.168.1.3 4.3.2.0/24
+
+        ff::1 4.3.2.0/24
+        192.168.69.4 2001:db8::/32
     }
 
     # Do not use 1.1.1.1, it explicitly blocks ECS
