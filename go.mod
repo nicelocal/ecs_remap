@@ -1,6 +1,6 @@
 module github.com/nicelocal/ecs_remap
 
-go 1.23.4
+go 1.23.3
 
 require (
 	github.com/coredns/caddy v1.1.2-0.20241029205200-8de985351a98
