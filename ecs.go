@@ -19,8 +19,9 @@ import (
 var log = clog.NewWithPlugin("ecs_remap")
 
 type cidr struct {
-	ip   net.IP
-	mask uint8
+	ip     net.IP
+	family uint16
+	mask   uint8
 }
 
 // Ecs is an example plugin to show how to write a plugin.
@@ -67,13 +68,6 @@ func (e *Ecs) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 		return plugin.NextOrFailure(e.Name(), e.Next, ctx, w, r)
 	}
 
-	var family uint16
-	if src.Is4() {
-		family = 1
-	} else {
-		family = 2
-	}
-
 	var ecs *dns.EDNS0_SUBNET
 	for _, s := range o.Option {
 		if ecs, ok = s.(*dns.EDNS0_SUBNET); ok {
@@ -89,7 +83,7 @@ func (e *Ecs) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 
 	ecs.SourceNetmask = entry.mask
 	ecs.Address = entry.ip
-	ecs.Family = family
+	ecs.Family = entry.family
 	ecs.SourceScope = 0
 
 	return plugin.NextOrFailure(e.Name(), e.Next, ctx, w, r)

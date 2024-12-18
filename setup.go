@@ -40,13 +40,14 @@ func setup(c *caddy.Controller) error {
 		}
 		sz, _ := dstNet.Mask.Size()
 
-		dstIs4 := dstNet.IP.To4() != nil
-		if srcAddr.Is4() != dstIs4 {
-			return plugin.Error("ecs_remap", c.Errf("Both LHS and RHS of map must be of the same family: %s cannot map to %s", src, dst))
+		family := uint16(2)
+		if dstNet.IP.To4() != nil {
+			family = 1
 		}
 
 		lookup[srcAddr] = cidr{
 			dstNet.IP,
+			family,
 			uint8(sz),
 		}
 	}
