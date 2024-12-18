@@ -27,3 +27,20 @@ And use the following example Corefile:
     forward . 8.8.8.8
 }
 ```
+
+Example dockerfile:
+
+```
+FROM golang
+
+RUN git clone -b v1.12.0 --depth 1 https://github.com/coredns/coredns /coredns && \
+    cd /coredns && \
+    sed '/bind:bind/a ecs_remap:github.com/nicelocal/ecs_remap' plugin.cfg -i && \
+    make
+
+FROM scratch
+
+COPY --from=0 /coredns/coredns /coredns
+
+ENTRYPOINT ["/coredns"]
+```
