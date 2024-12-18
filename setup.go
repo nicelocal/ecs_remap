@@ -15,18 +15,18 @@ func setup(c *caddy.Controller) error {
 	c.Next()
 
 	if !c.NextBlock() {
-		return plugin.Error("ecs_remap", c.ArgErr())
+		return plugin.Error("ecs_remap", c.SyntaxErr("{"))
 	}
 
 	lookup := make(map[netip.Addr]cidr)
-	for {
+	for c.Val() != "}" {
 		src := c.Val()
 		if !c.NextArg() {
 			return plugin.Error("ecs_remap", c.ArgErr())
 		}
 		dst := c.Val()
 		if !c.NextLine() {
-			break
+			return plugin.Error("ecs_remap", c.ArgErr())
 		}
 
 		srcAddr, err := netip.ParseAddr(src)
