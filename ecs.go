@@ -44,14 +44,23 @@ func setupEdns0Opt(r *dns.Msg) *dns.OPT {
 func (e *Ecs) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	o := setupEdns0Opt(r)
 
-	var src netip.Addr
+	var srcOrig net.IP
 	ip := w.RemoteAddr()
 	if i, ok := ip.(*net.UDPAddr); ok {
-		src, _ = netip.AddrFromSlice(i.IP)
+		srcOrig = i.IP
 	}
 	if i, ok := ip.(*net.TCPAddr); ok {
-		src, _ = netip.AddrFromSlice(i.IP)
+		srcOrig = i.IP
 	}
+
+	var src netip.Addr
+	tmp := srcOrig.To4()
+	if tmp != nil {
+		src, _ = netip.AddrFromSlice(tmp)
+	} else {
+		src, _ = netip.AddrFromSlice(srcOrig)
+	}
+
 	var entry cidr
 	var ok bool
 	if entry, ok = e.lookup[src]; !ok {
