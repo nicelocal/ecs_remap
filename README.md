@@ -6,6 +6,13 @@ The primary usecase is to remap private IP addresses from a corporate VPN to the
 
 Usage:
 
+Add the following to `plugins.cfg`, before `debug`:
+
+```
+ecs_remap:github.com/nicelocal/ecs_remap
+```
+
+And use the following example Corefile:
 ```
 . {
     ecs_remap {
